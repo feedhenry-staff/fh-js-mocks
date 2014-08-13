@@ -122,14 +122,15 @@ argument and simulate the different types of errors that may occur:
 
 
 ### MockHandler
-This class should be used to configure responses to your SDK inputs. The only 
-function you should need to use is *setResponse* unless certain edge cases 
-arise that require otherwise.
+An instance of this is returned from $fh.act.expect. This class should be used 
+to configure responses to your SDK inputs. The only function you should need to 
+use is *setResponse* unless certain edge cases arise that require otherwise.
 
 ##### setResponse(err, res)
-Configure the response that should be returned. Provided a non *null* value as 
+Configure the response that should be returned. Providing a non *null* value as 
 the first parameter will cause the error callback of the SDK to be called 
-upon flushing the request queue. 
+upon flushing the request queue, just like sending a non null error parameter 
+in *main.js* of an fh-nodeapp.
 
 
 
