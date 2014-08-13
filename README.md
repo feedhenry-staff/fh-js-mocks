@@ -62,9 +62,7 @@ describe('Some Controller/Model', function () {
 				}
 			});
 
-			// The login function uses $fh.act internally but expects only
-			// a single callback by design meaning it manages the double 
-			// callback nature of the FH SDK
+			// The login function uses $fh.act internally
 			MyController.login(USER, PASS, function (err, res) {
 				assert.equal(err, null);
 				assert(res);
@@ -89,9 +87,9 @@ $fh.act API is mocked out but more can be done as necessary and this could be
 largely genericised as the structure for most API calls is very similar.
 
 ### FH.Act
-Works just like the regular Act API. OK, almost like the regular Act API. It's 
+Works just like the regular Act API. OK, *almost* like the regular Act API. It's 
 still that same old function you called like $fh.act(opts, success, fail). 
-What's different is that it has two new functions appended as described here, 
+What's different is that it has some new functions appended as described here, 
 and demonstrated in the above example.
 
 ##### .expect(opts)
@@ -102,11 +100,11 @@ detailed below.
 ##### flush([count])
 Respond to *count* requests that have been queued to the Act mock.
 
-##### verifyNoOutstandingRequest
+##### verifyNoOutstandingRequest()
 Verify that all requests were satisfied. Can be called in an *afterEach* hook 
 to ensure you're cleanly testing each request.
 
-#####verifyNoOutstandingExpectation
+#####verifyNoOutstandingExpectation()
 Verify that all expectation were had a request made for them. Can be called in 
 an *afterEach* hook to ensure you're not defining unnecessary expectations and 
 that those you do declare are utilised.
