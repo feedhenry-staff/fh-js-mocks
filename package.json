@@ -2,7 +2,7 @@
   "name": "fh-mocks",
   "version": "0.0.0",
   "description": "Mocks for the fh-js-sdk to enable unit testing of application logic.",
-  "main": "index.js",
+  "main": "./lib/api.js",
   "scripts": {
     "test": "make test"
   },
