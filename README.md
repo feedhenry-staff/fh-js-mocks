@@ -8,8 +8,8 @@ application logic without the need to actually perform requests.
 To use these mocks simply include them in a script tag in a custom test HTML 
 file or inject them using Karma (which is a much better idea). 
 
-These should be included *AFTER* the standard SDK script 
-(if you're including it) to ensure the overrides apply correctly to the SDK.
+These should be included *instead* of the standard SDK script when testing. 
+It may work by performing overrides later in it's life, but not right now.
 
 What's quite nice about this is that you can write all tests in a blocking 
 manner which keeps things pretty simple. You can write them using non-blocking 
