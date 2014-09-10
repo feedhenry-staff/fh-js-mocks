@@ -48,8 +48,10 @@ describe('Some Controller/Model', function () {
 			// expected to be called.
 			$fh.act.expect({
 				act: 'login',
-				u: USER,
-				p: PASS
+				req: {
+					u: USER,
+					p: PASS
+				}
 			})
 			// Since we're using $fh.act we mimic the cloud response callback
 			// structure here. The first arg is an error, the second is a 
