@@ -1,21 +1,22 @@
 FeedHenry Mocks
 ===================================
 
-A mocked out version of the FeedHenry JS SDK to enable unit testing of 
-application logic without the need to actually perform requests.
+A library that enables you to mock out APIs from the FeedHenry JS SDK. This 
+enables unit testing of application logic without the need to actually run the 
+SDK code which may be impractical or impossible for testing purposes.
 
 ## Usage
-To use these mocks simply include them in a script tag in a custom test HTML 
-file or inject them using Karma (which is a much better idea). 
+To use this mocking library simply include it in a script tag in a custom test 
+HTML file or inject it using Karma (which is a much better idea). 
 
-These should be included *instead* of the standard SDK script when testing. 
-It may work by performing overrides later in it's life, but not right now.
+This should be included *instead of* or *after* the standard _feedhenry.js_ SDK 
+script when testing.
 
-What's quite nice about this is that you can write all tests in a blocking 
+What's nice about this is that you can write all tests in a blocking 
 manner which keeps things pretty simple. You can write them using non-blocking 
 syntax via the usual Jasmine/Mocha *done* callback (these are the only two I'm 
 familiar with) if required too, just call the mock *flush* method when 
-]appropriate.
+appropriate.
 
 
 ## Example
@@ -24,6 +25,7 @@ familiar with) if required too, just call the mock *flush* method when
 'use strict';
 
 var assert = require('assert');
+// var fh = require('fh-js-mocks') <-- Possible with browserify
 
 var USER = 'johndoe',
 	PASS = 'ismaithliomcácamilis';
@@ -38,6 +40,15 @@ describe('Some Controller/Model', function () {
 		// for requests that have no expectation to match
 		$fh.act.verifyNoOutstandingRequest();
 		$fh.act.verifyNoOutstandingExpectation();
+
+		// This is optional. It will restore the original act function
+		// if you have included feedhenry.js
+		$fh.restoreOriginalApi('act');
+	});
+
+	beforeEach(function () {
+		// Create a shim function to replace the regular before running tests
+		$fh.createApiShim('act');
 	});
 
 
@@ -53,9 +64,11 @@ describe('Some Controller/Model', function () {
 					p: PASS
 				}
 			})
-			// Since we're using $fh.act we mimic the cloud response callback
-			// structure here. The first arg is an error, the second is a 
-			// response; just like in cloud/main.js
+			// The set response function takes two args. 
+			// The first arg, if not null will cause the error/fail callback
+			// to be called with the given value. The second arg will be the 
+			// result passed to the success callback but will only be triggered 
+			// if the first arg is null
 			.setResponse(null, {
 				session: 'e4b6f7cfbe45a24e4773c6c2f59a0c41'
 				data: {
@@ -84,55 +97,115 @@ describe('Some Controller/Model', function () {
 
 
 ## API
-This library mimics the normal FeedHenry JavaScript SDK. Currently only the 
-$fh.act API is mocked out but more can be done as necessary and this could be 
-largely genericised as the structure for most API calls is very similar.
+This library mimics the normal FeedHenry JavaScript SDK. As you might be aware 
+the majority of API functions work like so: 
 
-### FH.Act
-Works just like the regular Act API. OK, *almost* like the regular Act API. It's 
-still that same old function you called like $fh.act(opts, success, fail). 
-What's different is that it has some new functions appended as described here, 
-and demonstrated in the above example.
+```javascript
+$fh.someApi(options, successCallback, failCallback);
+```
 
-##### .expect(opts)
-The expect function tells our mock Act service to expect a specific input and 
-returns a *MockHandler* that allows us to configure a response scenario as 
-detailed below.
+This library allows you to override existing implementations, and will create 
+one if none exists. For example this will replace/create the $fh.act API:
 
-##### flush([count])
-Respond to *count* requests that have been queued to the Act mock.
+```
+$fh.createShim('act');
+```
 
-##### verifyNoOutstandingRequest()
-Verify that all requests were satisfied. Can be called in an *afterEach* hook 
-to ensure you're cleanly testing each request.
+### MockApiInstance
+Created using _$fh.createApiShim(name)_. Works just like a regular $fh API. 
+Well, *almost* like a regular API. It's still a same old function definition 
+you know and love: _$fh.someApi(opts, success, fail)_. What's different is that 
+it has some new functions appended as described here, and demonstrated in the 
+examples.
 
-#####verifyNoOutstandingExpectation()
-Verify that all expectation were had a request made for them. Can be called in 
-an *afterEach* hook to ensure you're not defining unnecessary expectations and 
+##### MockApiInstance.expect(input)
+The expect function tells our mock API service to expect a specific _input_ and 
+returns a *MockApiResponder* that allows us to configure a response scenario 
+for the given _input_ as detailed below.
+
+##### MockApiInstance.flush([count])
+Respond to *count* calls that have been queued to the API mock. Calls are only 
+responed to if the same parameters it provided were given via an expect. The 
+parameter comparison is done by using _JSON.stringify_ on your inputs passed to 
+_$fh.shim.expect(input)_ and _$fh.shim(inputs, success, fail)_.
+
+You'll probably not need to supply the optional _count_ argument often, perhaps 
+even never.
+
+##### MockApiInstance.verifyNoOutstandingRequest()
+Verify that all calls to your shim were satisfied. Can be called in an 
+*afterEach* hook to ensure you're cleanly responding to each call.
+
+##### MockApiInstance.verifyNoOutstandingExpectation()
+Verify that all expectations had a request made for them. Can be called in an 
+*afterEach* hook to ensure you're not defining unnecessary expectations and 
 that those you do declare are utilised.
 
-##### ERRORS (Hopefully coming soon...)
-This would be pretty awesome. When calling the *setResponse* function on a 
-MockHandler you could provide $fh.act.ERRORS.TIMEOUT, or similar, as the error 
-argument and simulate the different types of errors that may occur:
-
-* NO_ACTNAME_PROVIDED (No 'act' was provided in the options object)
-* UNKNOWN_ERROR
-* UNKNOWN_ACT (Act not exported in *cloud/main.js*)
-* TIMEOUT
-* PARSE_ERROR (Response JSON could not be parsed)
-
-
-### MockHandler
-An instance of this is returned from $fh.act.expect. This class should be used 
-to configure responses to your SDK inputs. The only function you should need to 
-use is *setResponse* unless certain edge cases arise that require otherwise.
+### MockApiResponder
+An instance of this is returned from $fh.shim.expect. This class should be 
+used to configure responses to your SDK inputs. The only function you should 
+need to use is *setResponse* unless certain edge cases arise that require 
+otherwise.
 
 ##### setResponse(err, res)
-Configure the response that should be returned. Providing a non *null* value as 
-the first parameter will cause the error callback of the SDK to be called 
-upon flushing the request queue, just like sending a non null error parameter 
-in *main.js* of an fh-nodeapp.
+Configure the response that should be returned when inputs to _expect_ match 
+the input you provide to $fh.shim. Providing a non *null* value as the first 
+parameter will cause the error callback you provided to the SDK to be called 
+upon flushing the api call queue using _flush_. See the example below:
+
+```javascript
+
+describe('Test Our Push Module', function () {
+	afterEach(function () {
+		$fh.push.verifyNoOutstandingRequest();
+		$fh.push.verifyNoOutstandingExpectation();
+		$fh.restoreOriginalApi('push');
+	});
+
+	beforeEach(function () {
+		// Create a shim function for $fh.push
+		$fh.createApiShim('push');
+	});
+
+	it('Should handle failure and return SDK error', function () {
+		var ERR_CODE = 'push_nosupport';
+
+		var responder = $fh.push.expect({
+			act: 'register'
+		});
+
+		responder.setResponse(ERR_CODE, null);
+
+		// Uses $fh.push internally
+		PushModule.register(funcion (sdkError, result) {
+			assert.equal(sdkError, ERR_CODE);
+		});
+
+		$fh.push.flush();
+	});
+
+	it('Should handle failure and return SDK error', function () {
+		var FAKE_TEST_RES = {
+			deviceToken: '12345890'
+		};
+
+		var responder = $fh.push.expect({
+			act: 'register'
+		});
+
+		responder.setResponse(null, FAKE_TEST_RES);
+
+		// Uses $fh.push internally
+		PushModule.register(funcion (sdkError, result) {
+			assert(result)
+			assert.equal(result.deviceToken, FAKE_TEST_RES.deviceToken);
+		});
+
+		$fh.push.flush();
+	});
+});
+
+```
 
 
 

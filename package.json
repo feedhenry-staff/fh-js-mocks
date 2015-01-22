@@ -1,6 +1,6 @@
 {
   "name": "fh-mocks",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Mocks for the fh-js-sdk to enable unit testing of application logic.",
   "main": "./lib/api.js",
   "scripts": {
@@ -10,10 +10,13 @@
     "fh",
     "fh-js-sdk",
     "fh-mocks",
-    "mocks"
+    "mocks",
+    "feedhenry",
+    "unit",
+    "testing"
   ],
   "author": "Evan Shortiss",
-  "license": "Copyright (c) 2014 FeedHenry Ltd, All Rights Reserved.",
+  "license": "MIT",
   "devDependencies": {
     "linelint": "0.0.3",
     "lintspaces-cli": "0.0.4",
@@ -21,6 +24,7 @@
     "jshint": "~2.5.3",
     "chai": "~1.9.1",
     "sinon": "~1.10.3",
-    "browserify": "~5.10.0"
+    "browserify": "~5.10.0",
+    "xtend": "~4.0.0"
   }
 }

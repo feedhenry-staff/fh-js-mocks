@@ -2,8 +2,8 @@
 
 var expect = require('chai').expect
   , sinon = require('sinon')
-  , MockActRequest = require('../lib/act/MockActRequest')
-  , MockHandler = require('../lib/act/MockHandler');
+  , MockApiCall = require('../lib/MockApiCall')
+  , MockApiResponder = require('../lib/MockApiResponder');
 
 
 // Sample args
@@ -20,15 +20,15 @@ var TEST_RESPONSE = {
 // Used for tests
 var mh;
 
-describe('MockHandler', function () {
+describe('MockApiResponder', function () {
   beforeEach(function () {
-    mh = new MockHandler(TEST_OPTS);
+    mh = new MockApiResponder(TEST_OPTS);
   });
 
 
-  describe('#MockHandler', function () {
-    it('Should create a MockHandler as expected', function () {
-      var m = new MockHandler(TEST_OPTS);
+  describe('#MockApiResponder', function () {
+    it('Should create a MockApiResponder as expected', function () {
+      var m = new MockApiResponder(TEST_OPTS);
 
       expect(m).to.be.a('object');
       expect(m).to.have.property('_expectedArgs').to.equal(TEST_OPTS);
@@ -72,11 +72,11 @@ describe('MockHandler', function () {
 
   describe('#argsMatch', function () {
     it('Should return true', function () {
-      expect(mh.argsMatch(new MockActRequest(TEST_OPTS))).to.equal(true);
+      expect(mh.argsMatch(new MockApiCall(TEST_OPTS))).to.equal(true);
     });
 
     it('Should return false', function () {
-      expect(mh.argsMatch(new MockActRequest({a:'a'}))).to.equal(false);
+      expect(mh.argsMatch(new MockApiCall({a:'a'}))).to.equal(false);
     });
   });
 
@@ -85,7 +85,7 @@ describe('MockHandler', function () {
     it('Should fire the success callback once', function () {
       var success = sinon.spy();
       var fail = sinon.spy();
-      var req = new MockActRequest(TEST_OPTS, success, fail);
+      var req = new MockApiCall(TEST_OPTS, success, fail);
 
       mh.setResponse(null, TEST_RESPONSE);
       mh.respond(req);
@@ -100,7 +100,7 @@ describe('MockHandler', function () {
     it('Should fire the fail callback once', function () {
       var success = sinon.spy();
       var fail = sinon.spy();
-      var req = new MockActRequest(TEST_OPTS, success, fail);
+      var req = new MockApiCall(TEST_OPTS, success, fail);
 
       mh.setResponse(TEST_RESPONSE, null);
       mh.respond(req);

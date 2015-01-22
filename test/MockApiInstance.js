@@ -2,7 +2,9 @@
 
 var expect = require('chai').expect
   , sinon = require('sinon')
-  , act = require('../lib/act');
+  , api = require('../lib/api');
+
+var act = api.createApiShim('act');
 
 var TEST_OPTS = {
   act: 'test',
@@ -13,7 +15,7 @@ var TEST_OPTS = {
 
 function noop() {}
 
-describe('Act', function () {
+describe('MockApiInstance', function () {
   beforeEach(function () {
     // Deactivate all old requests
     act.flush(true);

@@ -2,7 +2,7 @@
 
 var expect = require('chai').expect
   , sinon = require('sinon')
-  , MockActRequest = require('../lib/act/MockActRequest');
+  , MockApiCall = require('../lib/MockApiCall');
 
 
 var success = sinon.spy()
@@ -17,14 +17,14 @@ var success = sinon.spy()
   };
 
 
-describe('MockActRequest', function () {
+describe('MockApiCall', function () {
   beforeEach(function () {
     success = sinon.spy();
     fail = sinon.spy();
-    mar = new MockActRequest(TEST_OPTS, success, fail);
+    mar = new MockApiCall(TEST_OPTS, success, fail);
   });
 
-  describe('#MockActRequest', function () {
+  describe('#MockApiCall', function () {
     it ('Should be constructed with the correct values', function () {
       expect(mar._success).to.be.a('function');
       expect(mar._fail).to.be.a('function');
