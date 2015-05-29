@@ -1,6 +1,6 @@
 {
   "name": "fh-mocks",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "Mocks for the fh-js-sdk to enable unit testing of application logic.",
   "main": "./lib/api.js",
   "scripts": {
@@ -24,7 +24,9 @@
     "jshint": "~2.5.3",
     "chai": "~1.9.1",
     "sinon": "~1.10.3",
-    "browserify": "~5.10.0",
+    "browserify": "~5.10.0"
+  },
+  "dependencies": {
     "xtend": "~4.0.0"
   }
 }
