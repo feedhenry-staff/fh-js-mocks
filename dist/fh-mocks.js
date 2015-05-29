@@ -264,6 +264,7 @@ MockApiResponder.prototype.argsMatch = function (req) {
 };
 
 },{}],4:[function(require,module,exports){
+(function (global){
 'use strict';
 
 var MockApiInstance = require('./MockApiInstance')
@@ -278,15 +279,18 @@ module.exports = {
 };
 
 
-// Ensure window.$fh is defined
-if (typeof window !== 'undefined') {
-  if (!window.$fh) {
+// Ensure $fh is defined globally
+if (typeof $fh === 'undefined') {
+  if (typeof window !== 'undefined') {
     window.$fh = {};
+  } else {
+    // So we can test in Node.js apps, no karma/servers required
+    global.$fh = {};
   }
-
-  // Add the mock's extensions to the FH SDK
-  window.$fh = xtend(window.$fh, module.exports);
 }
+
+// Add the mock's extensions to the FH SDK
+$fh = xtend($fh, module.exports);
 
 /**
  * Create a shim for the given API and override the one on window.$fh
@@ -299,13 +303,11 @@ function createApiShim (apiName, noOverride) {
   var shim = new MockApiInstance();
 
   // Store the original function so it can be restored
-  if (typeof window !== 'undefined') {
-    originalApiFns[apiName] = window.$fh[apiName];
-  }
+  originalApiFns[apiName] = $fh[apiName];
 
   // Override the existing version?
-  if (!noOverride && typeof window !== 'undefined') {
-    window.$fh[apiName] = shim;
+  if (!noOverride) {
+    $fh[apiName] = shim;
   }
 
   // Bind the shim to the exports object
@@ -319,11 +321,10 @@ function createApiShim (apiName, noOverride) {
  * @param  {String} apiName The API whose original function you to restore
  */
 function restoreOriginalApi (apiName) {
-  if (typeof window !== 'undefined') {
-    window.$fh = originalApiFns[apiName];
-  }
+  $fh = originalApiFns[apiName];
 }
 
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{"./MockApiInstance":2,"xtend":5}],5:[function(require,module,exports){
 module.exports = extend
 
