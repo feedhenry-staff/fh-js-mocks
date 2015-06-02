@@ -7,7 +7,12 @@ SDK code which may be impractical or impossible for testing purposes.
 
 ## Usage
 To use this mocking library simply include it in a script tag in a custom test 
-HTML file or inject it using Karma (which is a much better idea). 
+HTML file or inject it using Karma (which is a much better idea). Alternatively
+you can run your tests in a Node.js environment since this module will create a
+_$fh_ global on either _window_ or _global_ depending on where you're running 
+it, a browser or Node.js respectively. See 
+[here](https://github.com/feedhenry-staff/cloud-connection-monitor) for an 
+example of Node.js tests for a library that is actually meant for a browser!
 
 This should be included *instead of* or *after* the standard _feedhenry.js_ SDK 
 script when testing.
