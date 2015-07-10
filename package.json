@@ -1,6 +1,6 @@
 {
   "name": "fh-mocks",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Mocks for the fh-js-sdk to enable unit testing of application logic.",
   "main": "./lib/api.js",
   "repository": "https://github.com/feedhenry-staff/fh-js-mocks",
