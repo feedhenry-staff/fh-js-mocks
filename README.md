@@ -1,5 +1,9 @@
 FeedHenry Mocks
-===================================
+===============
+
+[![build-status](https://travis-ci.org/feedhenry-staff/fh-js-mocks.svg?branch=master)
+](https://travis-ci.org/feedhenry-staff/fh-js-mocks.svg?branch=master)[![version](https://badge.fury.io/js/fh-mocks.svg)
+](https://badge.fury.io/js/fh-mocks.svg)
 
 A library that enables you to mock out APIs from the FeedHenry JS SDK. This 
 enables unit testing of application logic without the need to actually run the 
